@@ -3,18 +3,19 @@ import pandas as pd
 import os
 import pymongo
 import requests
-import warnings
 from bs4 import BeautifulSoup as bs
 from splinter import Browser
-from urllib.parse import urlparse
+import time
+
+wait_time=5
+
+# # Create global dictionary that can be imported into Mongo
+# mars_info = {}
 
 def init_browser():
     #pointing to the directory where chromedriver exists
     executable_path = {'executable_path': 'chromedriver.exe'}
     return Browser('chrome', **executable_path, headless=False)
-
-# Create global dictionary that can be imported into Mongo
-mars_info = {}
 
 # NASA MARS NEWS
 def scrape_mars_news():
@@ -25,6 +26,7 @@ def scrape_mars_news():
     # Visit Nasa news url through splinter module
     url = 'https://mars.nasa.gov/news/'
     browser.visit(url)
+    time.sleep(sleep_time)
 
     # HTML Object
     html = browser.html
@@ -41,7 +43,7 @@ def scrape_mars_news():
     mars_info['news_paragraph'] = news_p
 
     browser.quit()
-    return mars_info
+    # return mars_info
 
  
 
@@ -54,6 +56,7 @@ def scrape_mars_image():
     # Visit Mars Space Images through splinter module
     image_url = 'https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars'
     browser.visit(image_url)
+    time.sleep(sleep_time)
 
     # HTML Object 
     html_image = browser.html
@@ -75,7 +78,7 @@ def scrape_mars_image():
         
     browser.quit()
 
-    return mars_info
+    # return mars_info
 
         
 
@@ -89,6 +92,7 @@ def scrape_mars_weather():
     # Visit Mars Weather Twitter through splinter module
     weather_url = 'https://twitter.com/marswxreport?lang=en'
     browser.visit(weather_url)
+    time.sleep(sleep_time)
 
     # HTML Object 
     html_weather = browser.html
@@ -112,7 +116,7 @@ def scrape_mars_weather():
 
     browser.quit()
 
-    return mars_info
+    # return mars_info
 
    
 # MARS FACTS
@@ -123,6 +127,7 @@ def scrape_mars_facts():
 
     facts_url = 'http://space-facts.com/mars/'
     browser.visit(url)
+    time.sleep(sleep_time)
 
     # Use Pandas to "read_html" to parse the URL
     table = pd.read_html(url)
@@ -141,7 +146,7 @@ def scrape_mars_facts():
 
     browser.quit()
 
-    return mars_info
+    # return mars_info
 
 
 # MARS HEMISPHERES
@@ -153,7 +158,9 @@ def scrape_mars_hemispheres():
 
     # Visit hemispheres website through splinter module 
     hemisphere_url = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
-    response = requests.get(hemisphere_url)
+    # response = requests.get(hemisphere_url)
+    browser.visit(hemisphere_url)
+    time.sleep(sleep_time)
     soup = bs(response.text, 'html.parser')
   
     # Retreive all items that contain mars hemispheres information
@@ -179,4 +186,9 @@ def scrape_mars_hemispheres():
 
     browser.quit()
 
-    return mars_info
+    # return mars_info
+
+if __name__ == "__main__": 
+    scrape_mars_news()
+    print(mars_info)
+    print()
